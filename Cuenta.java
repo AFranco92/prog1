@@ -48,7 +48,9 @@ public class Cuenta {
 		System.out.println("Movimientos: ");
 		for(int i = 0; i < MAXMOVIMIENTOS; i++) {
 			System.out.println("__________________________");
-			this.arrMovimientos[i].listarDatos();
+			if(arrMovimientos[i] != null) {
+				this.arrMovimientos[i].listarDatos();
+			}
 		}
 	}
 	

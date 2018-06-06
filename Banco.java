@@ -95,6 +95,7 @@ public class Banco {
 	
 	public void depositar(int Dni, int nrodec, double monto) {
 		Movimiento deposito = new Movimiento(monto, 1, "deposito");
+		Movimiento iibb = new Movimiento((2*monto/100), 3, "iibb");
 		int poscuenta = obtenerPoscuenta(nrodec);
 		int poscliente = obtenerPoscliente(Dni);
 		if(this.arrClientes[poscliente].getDni() == Dni) {
@@ -102,15 +103,37 @@ public class Banco {
 				this.arrCuentas[poscuenta].setMonto(monto);
 				correrMovimientosaderecha(poscuenta);
 				this.arrCuentas[poscuenta].arrMovimientos[0] = deposito;
+				if(this.arrCuentas[poscuenta].getCliente().esMonotributista()) {
+					this.arrCuentas[poscuenta].setMonto(-(2*monto/100));
+					correrMovimientosaderecha(poscuenta);
+					this.arrCuentas[poscuenta].arrMovimientos[0] = iibb;
+				}
 			}
 			else
 				System.out.println("No existe cuenta.");
 		}
 		else 
-			System.out.println("No existe el cliente.");
+			System.out.println("El DNI ingresado no pertenece a un cliente del banco.");
 	}
 	
 	public void retirar(int Dni, int nrodec, double monto) {
-		
+		Movimiento retiro = new Movimiento(monto, 5, "retiro");
+		int poscuenta = obtenerPoscuenta(nrodec);
+		int poscliente = obtenerPoscliente(Dni);
+		if(this.arrClientes[poscliente] != null && this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
+			if(this.arrCuentas[poscuenta].getCliente().getDni() == Dni) {
+				if(this.arrCuentas[poscuenta].getMonto() >= monto) {
+					this.arrCuentas[poscuenta].setMonto(-monto);
+					correrMovimientosaderecha(poscuenta);
+					this.arrCuentas[poscuenta].arrMovimientos[0] = retiro;
+				}
+				else
+					System.out.println("No posee esa cantidad de dinero.");
+			}
+			else
+				System.out.println("El DNI ingresado no pertenece a un cliente del banco.");
+		}
+		else
+			System.out.println("La cuenta no pertenece al cliente.");
 	}
 }
