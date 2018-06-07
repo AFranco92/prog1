@@ -10,7 +10,12 @@ public class SimularBanco {
 		b1.depositar(37014788, 1, 40000);
 		b1.retirar(37014788, 1, 10000);
 		b1.asignarCuenta(37014788);
-		b1.depositar(37014788, 2, 4300);
+		Cliente juanp = new Cliente();
+		juanp.altaCliente("Juan Perez", 12345678, false);
+		b1.agregarCliente(juanp);
+		b1.asignarCuenta(12345678);
+		b1.transferir(37014788, 1, 3, 4200);
 		b1.listarDatoscliente(37014788);
+		b1.listarDatoscliente(12345678);
 	}
 }

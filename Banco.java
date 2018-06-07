@@ -36,27 +36,17 @@ public class Banco {
 		return posvacia;
 	}
 	
-	public int obtenerPoscuenta(int nrodec) {
-		int poscuenta = 0;
-		int i = 0;
-		while(i < MAX && arrCuentas[i].getNrodecuenta() != nrodec) {
-			i++;
-		}
-		if(i < MAX && arrCuentas[i].getNrodecuenta() == nrodec) {
-			poscuenta = i;
-		}
-		return poscuenta;
-	}
-	
 	public int obtenerPoscliente(int Dni) {
 		int poscliente = 0;
 		int i = 0;
-		while(i < MAX && this.arrClientes[i] == null) {
-			i++;
+		while(i < MAX && this.arrClientes[i] != null) {
+			if(this.arrClientes[i].getDni() == Dni) {
+				poscliente = i;
+				return poscliente;
+			}
+		i++;
 		}
-		if(this.arrClientes[i].getDni() == Dni) {
-			poscliente = i;
-		}
+		
 		return poscliente;
 	}
 		
@@ -69,6 +59,22 @@ public class Banco {
 		int poscliente = obtenerPoscliente(Dni);
 		int posvaciacuenta = obtenerPosvaciacuenta();
 		this.arrCuentas[posvaciacuenta].setCliente(arrClientes[poscliente]);
+	}
+	
+	public void cerrarCuenta(int Dni, int nrodec) {
+		int poscliente = obtenerPoscliente(Dni);
+		int poscuenta = nrodec-1;
+		if(this.arrClientes[poscliente].getDni() == Dni) {
+			if(this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
+				this.arrCuentas[poscuenta].setCliente(null);
+				this.arrCuentas[poscuenta].setMonto(0);
+				this.arrCuentas[poscuenta].setArrMovimientos(new Movimiento[Cuenta.MAXMOVIMIENTOS]);
+			}
+			else
+				System.out.println("No existe cuenta o no es de ese cliente.");
+		}
+		else
+			System.out.println("No existe cliente.");
 	}
 	
 	public void listarCuentas(int Dni) {
@@ -96,7 +102,7 @@ public class Banco {
 	public void depositar(int Dni, int nrodec, double monto) {
 		Movimiento deposito = new Movimiento(monto, 1, "deposito");
 		Movimiento iibb = new Movimiento((2*monto/100), 3, "iibb");
-		int poscuenta = obtenerPoscuenta(nrodec);
+		int poscuenta = nrodec-1;
 		int poscliente = obtenerPoscliente(Dni);
 		if(this.arrClientes[poscliente].getDni() == Dni) {
 			if(this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
@@ -118,7 +124,7 @@ public class Banco {
 	
 	public void retirar(int Dni, int nrodec, double monto) {
 		Movimiento retiro = new Movimiento(monto, 5, "retiro");
-		int poscuenta = obtenerPoscuenta(nrodec);
+		int poscuenta = nrodec-1;
 		int poscliente = obtenerPoscliente(Dni);
 		if(this.arrClientes[poscliente] != null && this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
 			if(this.arrCuentas[poscuenta].getCliente().getDni() == Dni) {
@@ -135,5 +141,42 @@ public class Banco {
 		}
 		else
 			System.out.println("La cuenta no pertenece al cliente.");
+	}
+	
+	public void transferir(int Dni, int nrodeco, int nrodecd, double monto) {
+		Movimiento ingresoportransferencia = new Movimiento(monto, 2, "ingreso por transferencia");
+		Movimiento egresoportransferencia = new Movimiento(monto, 4, "egreso por transferencia");
+		Movimiento iibb = new Movimiento((2*monto/100), 3, "iibb");
+		int poscuentaorigen = nrodeco-1;
+		int poscuentadestino = nrodecd-1;
+		int poscliente = obtenerPoscliente(Dni);
+		if(this.arrClientes[poscliente].getDni() == Dni) {
+			if(this.arrCuentas[poscuentaorigen].getCliente().getDni() == this.arrClientes[poscliente].getDni()) {
+				if(monto <= this.arrCuentas[poscuentaorigen].getMonto()) {
+					if(this.arrCuentas[poscuentadestino].getCliente() != null) {
+						this.arrCuentas[poscuentaorigen].setMonto(-monto);
+						correrMovimientosaderecha(nrodeco);
+						this.arrCuentas[poscuentaorigen].arrMovimientos[0] = egresoportransferencia;
+						this.arrCuentas[poscuentadestino].setMonto(monto);
+						correrMovimientosaderecha(nrodecd);
+						this.arrCuentas[poscuentadestino].arrMovimientos[0] = ingresoportransferencia;
+						if(this.arrCuentas[poscuentadestino].getCliente().esMonotributista() && 
+								this.arrCuentas[poscuentaorigen].getCliente() != this.arrCuentas[poscuentadestino].getCliente()) {
+							this.arrCuentas[poscuentadestino].setMonto(-(2*monto/100));
+							correrMovimientosaderecha(poscuentadestino);
+							this.arrCuentas[poscuentadestino].arrMovimientos[0] = iibb;
+						}
+					}
+					else
+						System.out.println("No existe cliente con esa cuenta.");
+				}
+				else
+					System.out.println("No posee esa cantidad de dinero.");
+			}
+			else
+				System.out.println("La cuenta no pertenece al cliente.");
+		}
+		else
+			System.out.println("No existe un cliente asociado a ese DNI.");
 	}
 }
