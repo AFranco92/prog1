@@ -9,6 +9,8 @@ public class SimularBanco {
 		b1.depositar(37014788, 1, 15000);
 		b1.depositar(37014788, 1, 40000);
 		b1.retirar(37014788, 1, 10000);
+		b1.asignarCuenta(37014788);
+		b1.depositar(37014788, 2, 4300);
 		b1.listarDatoscliente(37014788);
 	}
 }

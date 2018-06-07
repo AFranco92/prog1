@@ -27,10 +27,10 @@ public class Banco {
 	public int obtenerPosvaciacuenta() {
 		int posvacia = 0;
 		int i = 0;
-		while(i < MAX && this.arrCuentas[i] == null) {
+		while(i < MAX && this.arrCuentas[i].getCliente() != null) {
 			i++;
 		}
-		if(this.arrCuentas[i] == null) {
+		if(i < MAX && this.arrCuentas[i].getCliente() == null) {
 			posvacia = i;
 		}
 		return posvacia;
@@ -39,10 +39,10 @@ public class Banco {
 	public int obtenerPoscuenta(int nrodec) {
 		int poscuenta = 0;
 		int i = 0;
-		while(i < MAX && this.arrCuentas[i] == null) {
+		while(i < MAX && arrCuentas[i].getNrodecuenta() != nrodec) {
 			i++;
 		}
-		if(arrCuentas[i].getNrodecuenta() == nrodec) {
+		if(i < MAX && arrCuentas[i].getNrodecuenta() == nrodec) {
 			poscuenta = i;
 		}
 		return poscuenta;
