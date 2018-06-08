@@ -36,16 +36,16 @@ public class Movimiento {
 	public void setOperacion(String operacion) {
 		switch(this.operacion) {
 		case "deposito" : case "ingreso por transferencia" : 
-			case "iibb" : case "egreso por transferencia" : 
+			case "IIBB" : case "egreso por transferencia" : 
 				case "retiro" : this.operacion = operacion; break;
 				default: System.out.println("La operación no existe. Intente nuevamente."); break;
 		}
 	}
 	
 	public void listarDatos() {
-		System.out.println("Monto: $"+this.monto);
-		System.out.println("Tipo: "+this.tipo);
-		System.out.println("Operación: "+this.operacion);
+		System.out.println("\tMonto: $"+this.monto);
+		System.out.println("\tTipo: "+this.tipo);
+		System.out.println("\tOperación: "+this.operacion);
 		System.out.println("__________________________");
 	}
 }

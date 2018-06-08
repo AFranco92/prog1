@@ -12,7 +12,7 @@ public class Banco {
 		}
 	}
 	
-	public int obtenerPosvacia() {
+	private int obtenerPosvaciacliente() {
 		int posvacia = 0;
 		int i = 0;
 		while(i < MAX && this.arrClientes[i] != null) {
@@ -24,7 +24,7 @@ public class Banco {
 		return posvacia;
 	}
 	
-	public int obtenerPosvaciacuenta() {
+	private int obtenerPosvaciacuenta() {
 		int posvacia = 0;
 		int i = 0;
 		while(i < MAX && this.arrCuentas[i].getCliente() != null) {
@@ -36,7 +36,7 @@ public class Banco {
 		return posvacia;
 	}
 	
-	public int obtenerPoscliente(int Dni) {
+	private int obtenerPoscliente(int Dni) {
 		int poscliente = 0;
 		int i = 0;
 		while(i < MAX && this.arrClientes[i] != null) {
@@ -51,7 +51,7 @@ public class Banco {
 	}
 		
 	public void agregarCliente(Cliente nuevocliente) {
-		int posvacia = obtenerPosvacia();
+		int posvacia = obtenerPosvaciacliente();
 		this.arrClientes[posvacia] = nuevocliente;
 	}
 	
@@ -104,19 +104,19 @@ public class Banco {
 	}
 
 	public void depositar(int Dni, int nrodec, double monto) {
-		Movimiento deposito = new Movimiento(monto, 1, "deposito");
-		Movimiento iibb = new Movimiento((2*monto/100), 3, "iibb");
+		Movimiento deposito = new Movimiento(monto, 1, "Depósito");
+		Movimiento IIBB = new Movimiento((2*monto/100), 3, "IIBB");
 		int poscuenta = nrodec-1;
 		int poscliente = obtenerPoscliente(Dni);
 		if(this.arrClientes[poscliente].getDni() == Dni) {
-			if(this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
+			if(this.arrCuentas[poscuenta].getNrodecuenta() == nrodec && monto > 0) {
 				this.arrCuentas[poscuenta].setMonto(monto);
 				correrMovimientosaderecha(poscuenta);
 				this.arrCuentas[poscuenta].arrMovimientos[0] = deposito;
 				if(this.arrCuentas[poscuenta].getCliente().esMonotributista()) {
 					this.arrCuentas[poscuenta].setMonto(-(2*monto/100));
 					correrMovimientosaderecha(poscuenta);
-					this.arrCuentas[poscuenta].arrMovimientos[0] = iibb;
+					this.arrCuentas[poscuenta].arrMovimientos[0] = IIBB;
 				}
 			}
 			else
@@ -127,12 +127,12 @@ public class Banco {
 	}
 	
 	public void retirar(int Dni, int nrodec, double monto) {
-		Movimiento retiro = new Movimiento(monto, 5, "retiro");
+		Movimiento retiro = new Movimiento(monto, 5, "Retiro");
 		int poscuenta = nrodec-1;
 		int poscliente = obtenerPoscliente(Dni);
 		if(this.arrClientes[poscliente] != null && this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
 			if(this.arrCuentas[poscuenta].getCliente().getDni() == Dni) {
-				if(this.arrCuentas[poscuenta].getMonto() >= monto) {
+				if(this.arrCuentas[poscuenta].getMonto() >= monto && monto > 0) {
 					this.arrCuentas[poscuenta].setMonto(-monto);
 					correrMovimientosaderecha(poscuenta);
 					this.arrCuentas[poscuenta].arrMovimientos[0] = retiro;
@@ -159,28 +159,28 @@ public class Banco {
 		this.arrCuentas[poscuentadestino].arrMovimientos[0] = ingresoportransferencia;
 	}
 	
-	private void modificarCuentaMTdestinoportrans(int poscuentadestino, double monto, Movimiento iibb) {
+	private void modificarCuentaMTdestinoportrans(int poscuentadestino, double monto, Movimiento IIBB) {
 		this.arrCuentas[poscuentadestino].setMonto(-(2*monto/100));
 		correrMovimientosaderecha(poscuentadestino);
-		this.arrCuentas[poscuentadestino].arrMovimientos[0] = iibb;
+		this.arrCuentas[poscuentadestino].arrMovimientos[0] = IIBB;
 	}
 	
 	public void transferir(int Dni, int nrodeco, int nrodecd, double monto) {
-		Movimiento ingresoportransferencia = new Movimiento(monto, 2, "ingreso por transferencia");
-		Movimiento egresoportransferencia = new Movimiento(monto, 4, "egreso por transferencia");
-		Movimiento iibb = new Movimiento((2*monto/100), 3, "iibb");
+		Movimiento ingresoportransferencia = new Movimiento(monto, 2, "Ingreso por transferencia");
+		Movimiento egresoportransferencia = new Movimiento(monto, 4, "Egreso por transferencia");
+		Movimiento IIBB = new Movimiento((2*monto/100), 3, "IIBB");
 		int poscuentaorigen = nrodeco-1;
 		int poscuentadestino = nrodecd-1;
 		int poscliente = obtenerPoscliente(Dni);
 		if(this.arrClientes[poscliente].getDni() == Dni) {
 			if(this.arrCuentas[poscuentaorigen].getCliente().getDni() == this.arrClientes[poscliente].getDni()) {
-				if(monto <= this.arrCuentas[poscuentaorigen].getMonto()) {
+				if(monto <= this.arrCuentas[poscuentaorigen].getMonto() && monto > 0) {
 					if(this.arrCuentas[poscuentadestino].getCliente() != null) {
 						modificarCuentaorigenportrans(poscuentaorigen, nrodeco, monto, egresoportransferencia);
 						modificarCuentadestinoportrans(poscuentadestino, nrodecd, monto, ingresoportransferencia);
 						if(this.arrCuentas[poscuentadestino].getCliente().esMonotributista() && 
 								this.arrCuentas[poscuentaorigen].getCliente() != this.arrCuentas[poscuentadestino].getCliente()) {
-							modificarCuentaMTdestinoportrans(poscuentadestino, monto, iibb);
+							modificarCuentaMTdestinoportrans(poscuentadestino, monto, IIBB);
 						}
 					}
 					else
