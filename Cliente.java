@@ -35,6 +35,7 @@ public class Cliente {
 	}
 	
 	public void listarDatos() {
+		System.out.println("__________________________"+"\n"+"__________________________");
 		System.out.println("Nombre y apellido: "+this.nombreyapellido);
 		System.out.println("Dni: "+this.Dni);
 		if(this.esmonotributista)

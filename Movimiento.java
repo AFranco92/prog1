@@ -46,5 +46,6 @@ public class Movimiento {
 		System.out.println("Monto: $"+this.monto);
 		System.out.println("Tipo: "+this.tipo);
 		System.out.println("Operación: "+this.operacion);
+		System.out.println("__________________________");
 	}
 }

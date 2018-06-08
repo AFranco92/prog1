@@ -46,10 +46,8 @@ public class Cuenta {
 		System.out.println("Número de cuenta: "+this.nrodecuenta);
 		System.out.println("Saldo: $"+this.monto);
 		System.out.println("Movimientos: ");
-		System.out.println("__________________________");
 		for(int i = 0; i < MAXMOVIMIENTOS; i++) {
 			if(arrMovimientos[i] != null) {
-				
 				this.arrMovimientos[i].listarDatos();
 			}
 		}
