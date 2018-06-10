@@ -53,4 +53,10 @@ public class Cuenta {
 		}
 	}
 	
+	public void correrMovimientosaderecha(int poscuenta) {
+		for(int i = MAXMOVIMIENTOS-1; i > 0; i--) {
+			arrMovimientos[i] = arrMovimientos[i-1];
+		}
+	}
+	
 }

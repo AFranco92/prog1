@@ -96,12 +96,6 @@ public class Banco {
 		this.arrClientes[poscliente].listarDatos();
 		listarCuentas(Dni);
 	}
-	
-	private void correrMovimientosaderecha(int poscuenta) {
-		for(int i = Cuenta.MAXMOVIMIENTOS-1; i > 0; i--) {
-			this.arrCuentas[poscuenta].arrMovimientos[i] = this.arrCuentas[poscuenta].arrMovimientos[i-1];
-		}
-	}
 
 	public void depositar(int Dni, int nrodec, double monto) {
 		Movimiento deposito = new Movimiento(monto, 1, "Depósito");
@@ -111,11 +105,11 @@ public class Banco {
 		if(this.arrClientes[poscliente].getDni() == Dni) {
 			if(this.arrCuentas[poscuenta].getNrodecuenta() == nrodec && monto > 0) {
 				this.arrCuentas[poscuenta].setMonto(monto);
-				correrMovimientosaderecha(poscuenta);
+				this.arrCuentas[poscuenta].correrMovimientosaderecha(poscuenta);
 				this.arrCuentas[poscuenta].arrMovimientos[0] = deposito;
 				if(this.arrCuentas[poscuenta].getCliente().esMonotributista()) {
 					this.arrCuentas[poscuenta].setMonto(-(2*monto/100));
-					correrMovimientosaderecha(poscuenta);
+					this.arrCuentas[poscuenta].correrMovimientosaderecha(poscuenta);
 					this.arrCuentas[poscuenta].arrMovimientos[0] = IIBB;
 				}
 			}
@@ -134,7 +128,7 @@ public class Banco {
 			if(this.arrCuentas[poscuenta].getCliente().getDni() == Dni) {
 				if(this.arrCuentas[poscuenta].getMonto() >= monto && monto > 0) {
 					this.arrCuentas[poscuenta].setMonto(-monto);
-					correrMovimientosaderecha(poscuenta);
+					this.arrCuentas[poscuenta].correrMovimientosaderecha(poscuenta);
 					this.arrCuentas[poscuenta].arrMovimientos[0] = retiro;
 				}
 				else
@@ -149,19 +143,19 @@ public class Banco {
 	
 	private void modificarCuentaorigenportrans(int poscuentaorigen, int nrodeco, double monto, Movimiento egresoportransferencia) {
 		this.arrCuentas[poscuentaorigen].setMonto(-monto);
-		correrMovimientosaderecha(poscuentaorigen);
+		this.arrCuentas[poscuentaorigen].correrMovimientosaderecha(poscuentaorigen);
 		this.arrCuentas[poscuentaorigen].arrMovimientos[0] = egresoportransferencia;
 	}
 	
 	private void modificarCuentadestinoportrans(int poscuentadestino, int nrodecd, double monto, Movimiento ingresoportransferencia) {
 		this.arrCuentas[poscuentadestino].setMonto(monto);
-		correrMovimientosaderecha(poscuentadestino);
+		this.arrCuentas[poscuentadestino].correrMovimientosaderecha(poscuentadestino);
 		this.arrCuentas[poscuentadestino].arrMovimientos[0] = ingresoportransferencia;
 	}
 	
 	private void modificarCuentaMTdestinoportrans(int poscuentadestino, double monto, Movimiento IIBB) {
 		this.arrCuentas[poscuentadestino].setMonto(-(2*monto/100));
-		correrMovimientosaderecha(poscuentadestino);
+		this.arrCuentas[poscuentadestino].correrMovimientosaderecha(poscuentadestino);
 		this.arrCuentas[poscuentadestino].arrMovimientos[0] = IIBB;
 	}
 	
