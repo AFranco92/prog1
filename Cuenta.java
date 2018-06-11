@@ -1,10 +1,10 @@
 public class Cuenta {
 	
 	final static int MAXMOVIMIENTOS = 10;
-	public int nrodecuenta = 0;
+	private int nrodecuenta = 0;
 	private Cliente cliente;
 	private double monto = 0;
-	public Movimiento arrMovimientos[] = new Movimiento[MAXMOVIMIENTOS];
+	private Movimiento arrMovimientos[] = new Movimiento[MAXMOVIMIENTOS];
 	
 	Cuenta(int n) {
 		this.nrodecuenta = n;
@@ -36,6 +36,10 @@ public class Cuenta {
 
 	public Movimiento[] getArrMovimientos() {
 		return arrMovimientos;
+	}
+	
+	public void setMovimiento(int posmovimiento, Movimiento movimiento) {
+		this.arrMovimientos[posmovimiento] = movimiento;
 	}
 	
 	public void setArrMovimientos(Movimiento[] arrMovimientos) {

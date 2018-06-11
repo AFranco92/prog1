@@ -1,7 +1,7 @@
 public class Cliente {
 	
 	private String nombreyapellido = " ";
-	private int Dni = 0;
+	private int dni = 0;
 	private boolean esmonotributista = false;
 
 	public String getNombreyapellido() {
@@ -13,11 +13,11 @@ public class Cliente {
 	}
 
 	public int getDni() {
-		return Dni;
+		return dni;
 	}
 
 	public void setDni(int dni) {
-		this.Dni = dni;
+		this.dni = dni;
 	}
 
 	public boolean esMonotributista() {
@@ -28,16 +28,16 @@ public class Cliente {
 		this.esmonotributista = esmonotributista;
 	}
 
-	public void altaCliente(String nombreyapellido, int Dni, boolean esmonotributista) {
+	public void altaCliente(String nombreyapellido, int dni, boolean esmonotributista) {
 		this.nombreyapellido = nombreyapellido;
-		this.Dni = Dni;
+		this.dni = dni;
 		this.esmonotributista = esmonotributista;
 	}
 	
 	public void listarDatos() {
 		System.out.println("__________________________"+"\n"+"__________________________");
 		System.out.println("Nombre y apellido: "+this.nombreyapellido);
-		System.out.println("Dni: "+this.Dni);
+		System.out.println("DNI: "+this.dni);
 		if(this.esmonotributista)
 			System.out.println("Monotributista: Sí");
 		else

@@ -36,11 +36,11 @@ public class Banco {
 		return posvacia;
 	}
 	
-	private int obtenerPoscliente(int Dni) {
+	private int obtenerPoscliente(int dni) {
 		int poscliente = 0;
 		int i = 0;
 		while(i < MAX && this.arrClientes[i] != null) {
-			if(this.arrClientes[i].getDni() == Dni) {
+			if(this.arrClientes[i].getDni() == dni) {
 				poscliente = i;
 				return poscliente;
 			}
@@ -55,8 +55,8 @@ public class Banco {
 		this.arrClientes[posvacia] = nuevocliente;
 	}
 	
-	public void asignarCuenta(int Dni) {
-		int poscliente = obtenerPoscliente(Dni);
+	public void asignarCuenta(int dni) {
+		int poscliente = obtenerPoscliente(dni);
 		int posvaciacuenta = obtenerPosvaciacuenta();
 		this.arrCuentas[posvaciacuenta].setCliente(arrClientes[poscliente]);
 	}
@@ -67,10 +67,10 @@ public class Banco {
 		this.arrCuentas[poscuenta].setArrMovimientos(new Movimiento[Cuenta.MAXMOVIMIENTOS]);
 	}
 	
-	public void cerrarCuenta(int Dni, int nrodec) {
-		int poscliente = obtenerPoscliente(Dni);
+	public void cerrarCuenta(int dni, int nrodec) {
+		int poscliente = obtenerPoscliente(dni);
 		int poscuenta = nrodec-1;
-		if(this.arrClientes[poscliente].getDni() == Dni) {
+		if(this.arrClientes[poscliente].getDni() == dni) {
 			if(this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
 				limpiarCuenta(poscuenta);
 			}
@@ -81,36 +81,36 @@ public class Banco {
 			System.out.println("No existe cliente.");
 	}
 	
-	public void listarCuentas(int Dni) {
+	public void listarCuentas(int dni) {
 		int i = 0;
 		while(i < MAX && this.arrCuentas[i].getCliente() != null) {
-			if(this.arrCuentas[i].getCliente().getDni() == Dni) {
+			if(this.arrCuentas[i].getCliente().getDni() == dni) {
 				this.arrCuentas[i].listarDatos();
 			}
 			i++;
 		}
 	}
 
-	public void listarDatoscliente(int Dni) {
-		int poscliente = obtenerPoscliente(Dni);
+	public void listarDatoscliente(int dni) {
+		int poscliente = obtenerPoscliente(dni);
 		this.arrClientes[poscliente].listarDatos();
-		listarCuentas(Dni);
+		listarCuentas(dni);
 	}
 
-	public void depositar(int Dni, int nrodec, double monto) {
+	public void depositar(int dni, int nrodec, double monto) {
 		Movimiento deposito = new Movimiento(monto, 1, "Depósito");
 		Movimiento IIBB = new Movimiento((2*monto/100), 3, "IIBB");
 		int poscuenta = nrodec-1;
-		int poscliente = obtenerPoscliente(Dni);
-		if(this.arrClientes[poscliente].getDni() == Dni) {
+		int poscliente = obtenerPoscliente(dni);
+		if(this.arrClientes[poscliente].getDni() == dni) {
 			if(this.arrCuentas[poscuenta].getNrodecuenta() == nrodec && monto > 0) {
 				this.arrCuentas[poscuenta].setMonto(monto);
 				this.arrCuentas[poscuenta].correrMovimientosaderecha(poscuenta);
-				this.arrCuentas[poscuenta].arrMovimientos[0] = deposito;
+				this.arrCuentas[poscuenta].setMovimiento(0, deposito);
 				if(this.arrCuentas[poscuenta].getCliente().esMonotributista()) {
 					this.arrCuentas[poscuenta].setMonto(-(2*monto/100));
 					this.arrCuentas[poscuenta].correrMovimientosaderecha(poscuenta);
-					this.arrCuentas[poscuenta].arrMovimientos[0] = IIBB;
+					this.arrCuentas[poscuenta].setMovimiento(0, IIBB);
 				}
 			}
 			else
@@ -120,16 +120,16 @@ public class Banco {
 			System.out.println("El DNI ingresado no pertenece a un cliente del banco.");
 	}
 	
-	public void retirar(int Dni, int nrodec, double monto) {
+	public void retirar(int dni, int nrodec, double monto) {
 		Movimiento retiro = new Movimiento(monto, 5, "Retiro");
 		int poscuenta = nrodec-1;
-		int poscliente = obtenerPoscliente(Dni);
+		int poscliente = obtenerPoscliente(dni);
 		if(this.arrClientes[poscliente] != null && this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
-			if(this.arrCuentas[poscuenta].getCliente().getDni() == Dni) {
+			if(this.arrCuentas[poscuenta].getCliente().getDni() == dni) {
 				if(this.arrCuentas[poscuenta].getMonto() >= monto && monto > 0) {
 					this.arrCuentas[poscuenta].setMonto(-monto);
 					this.arrCuentas[poscuenta].correrMovimientosaderecha(poscuenta);
-					this.arrCuentas[poscuenta].arrMovimientos[0] = retiro;
+					this.arrCuentas[poscuenta].setMovimiento(0, retiro);
 				}
 				else
 					System.out.println("No posee esa cantidad de dinero.");
@@ -144,29 +144,29 @@ public class Banco {
 	private void modificarCuentaorigenportrans(int poscuentaorigen, int nrodeco, double monto, Movimiento egresoportransferencia) {
 		this.arrCuentas[poscuentaorigen].setMonto(-monto);
 		this.arrCuentas[poscuentaorigen].correrMovimientosaderecha(poscuentaorigen);
-		this.arrCuentas[poscuentaorigen].arrMovimientos[0] = egresoportransferencia;
+		this.arrCuentas[poscuentaorigen].setMovimiento(0, egresoportransferencia);
 	}
 	
 	private void modificarCuentadestinoportrans(int poscuentadestino, int nrodecd, double monto, Movimiento ingresoportransferencia) {
 		this.arrCuentas[poscuentadestino].setMonto(monto);
 		this.arrCuentas[poscuentadestino].correrMovimientosaderecha(poscuentadestino);
-		this.arrCuentas[poscuentadestino].arrMovimientos[0] = ingresoportransferencia;
+		this.arrCuentas[poscuentadestino].setMovimiento(0, ingresoportransferencia);
 	}
 	
 	private void modificarCuentaMTdestinoportrans(int poscuentadestino, double monto, Movimiento IIBB) {
 		this.arrCuentas[poscuentadestino].setMonto(-(2*monto/100));
 		this.arrCuentas[poscuentadestino].correrMovimientosaderecha(poscuentadestino);
-		this.arrCuentas[poscuentadestino].arrMovimientos[0] = IIBB;
+		this.arrCuentas[poscuentadestino].setMovimiento(0, IIBB);
 	}
 	
-	public void transferir(int Dni, int nrodeco, int nrodecd, double monto) {
+	public void transferir(int dni, int nrodeco, int nrodecd, double monto) {
 		Movimiento ingresoportransferencia = new Movimiento(monto, 2, "Ingreso por transferencia");
 		Movimiento egresoportransferencia = new Movimiento(monto, 4, "Egreso por transferencia");
 		Movimiento IIBB = new Movimiento((2*monto/100), 3, "IIBB");
 		int poscuentaorigen = nrodeco-1;
 		int poscuentadestino = nrodecd-1;
-		int poscliente = obtenerPoscliente(Dni);
-		if(this.arrClientes[poscliente].getDni() == Dni) {
+		int poscliente = obtenerPoscliente(dni);
+		if(this.arrClientes[poscliente].getDni() == dni) {
 			if(this.arrCuentas[poscuentaorigen].getCliente().getDni() == this.arrClientes[poscliente].getDni()) {
 				if(monto <= this.arrCuentas[poscuentaorigen].getMonto() && monto > 0) {
 					if(this.arrCuentas[poscuentadestino].getCliente() != null) {
