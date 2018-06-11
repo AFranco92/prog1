@@ -104,6 +104,21 @@ public class Banco {
 			i++;
 		}
 	}
+	
+	private boolean cuentaEsdelcliente(int poscuenta, int nrodec, int dni) {
+		if(this.arrCuentas[poscuenta].getCliente() != null && this.arrCuentas[poscuenta].getCliente().getDni() == dni && 
+				this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean existeCliente(int poscliente, int dni) {
+		if(this.arrClientes[poscliente] != null && this.arrClientes[poscliente].getDni() == dni) {
+			return true;
+		}
+		return false;
+	}
 
 	public void listarDatoscliente(int dni) {
 		int poscliente = obtenerPoscliente(dni);
@@ -116,43 +131,43 @@ public class Banco {
 		Movimiento IIBB = new Movimiento((2*monto/100), 3, "IIBB");
 		int poscuenta = nrodec-1;
 		int poscliente = obtenerPoscliente(dni);
-		if(this.arrClientes[poscliente].getDni() == dni) {
-			if(this.arrCuentas[poscuenta].getNrodecuenta() == nrodec && monto > 0) {
+		if(existeCliente(poscliente, dni)) {
+			if(cuentaEsdelcliente(poscuenta, nrodec, dni) && monto > 0) {
 				this.arrCuentas[poscuenta].setMonto(monto);
 				this.arrCuentas[poscuenta].correrMovimientosaderecha(poscuenta);
 				this.arrCuentas[poscuenta].setMovimiento(0, deposito);
-				if(this.arrCuentas[poscuenta].getCliente().esMonotributista()) {
+				if(this.arrCuentas[poscuenta].getCliente() != null && this.arrCuentas[poscuenta].getCliente().esMonotributista()) {
 					this.arrCuentas[poscuenta].setMonto(-(2*monto/100));
 					this.arrCuentas[poscuenta].correrMovimientosaderecha(poscuenta);
 					this.arrCuentas[poscuenta].setMovimiento(0, IIBB);
 				}
 			}
 			else
-				System.out.println("No existe cuenta.");
+				System.out.println("Depósito fallido: La cuenta no pertenece al cliente o ha ingresado un número negativo.");
 		}
 		else 
-			System.out.println("El DNI ingresado no pertenece a un cliente del banco.");
+			System.out.println("Depósito fallido: El DNI ingresado no pertenece a un cliente del banco.");
 	}
 	
 	public void retirar(int dni, int nrodec, double monto) {
 		Movimiento retiro = new Movimiento(monto, 5, "Retiro");
 		int poscuenta = nrodec-1;
 		int poscliente = obtenerPoscliente(dni);
-		if(this.arrClientes[poscliente] != null && this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
-			if(this.arrCuentas[poscuenta].getCliente().getDni() == dni) {
+		if(cuentaEsdelcliente(poscuenta, nrodec, dni)) {
+			if(existeCliente(poscliente, dni)) {
 				if(this.arrCuentas[poscuenta].getMonto() >= monto && monto > 0) {
 					this.arrCuentas[poscuenta].setMonto(-monto);
 					this.arrCuentas[poscuenta].correrMovimientosaderecha(poscuenta);
 					this.arrCuentas[poscuenta].setMovimiento(0, retiro);
 				}
 				else
-					System.out.println("No posee esa cantidad de dinero.");
+					System.out.println("Retiro fallido: No posee esa cantidad de dinero.");
 			}
 			else
-				System.out.println("El DNI ingresado no pertenece a un cliente del banco.");
+				System.out.println("Retiro fallido: El DNI ingresado no pertenece a un cliente del banco.");
 		}
 		else
-			System.out.println("La cuenta no pertenece al cliente.");
+			System.out.println("Retiro fallido: La cuenta no pertenece al cliente.");
 	}
 	
 	private void modificarCuentaorigenportrans(int poscuentaorigen, int nrodeco, double monto, Movimiento egresoportransferencia) {
@@ -180,8 +195,8 @@ public class Banco {
 		int poscuentaorigen = nrodeco-1;
 		int poscuentadestino = nrodecd-1;
 		int poscliente = obtenerPoscliente(dni);
-		if(this.arrClientes[poscliente].getDni() == dni) {
-			if(this.arrCuentas[poscuentaorigen].getCliente().getDni() == this.arrClientes[poscliente].getDni()) {
+		if(existeCliente(poscliente, dni)) {
+			if(cuentaEsdelcliente(poscuentaorigen, nrodeco, dni)) {
 				if(monto <= this.arrCuentas[poscuentaorigen].getMonto() && monto > 0) {
 					if(this.arrCuentas[poscuentadestino].getCliente() != null) {
 						modificarCuentaorigenportrans(poscuentaorigen, nrodeco, monto, egresoportransferencia);
@@ -192,15 +207,15 @@ public class Banco {
 						}
 					}
 					else
-						System.out.println("No existe cliente con esa cuenta.");
+						System.out.println("Transferencia fallida: No existe cliente con esa cuenta.");
 				}
 				else
-					System.out.println("No posee esa cantidad de dinero.");
+					System.out.println("Transferencia fallida: No posee esa cantidad de dinero.");
 			}
 			else
-				System.out.println("La cuenta no pertenece al cliente.");
+				System.out.println("Transferencia fallida: La cuenta no pertenece al cliente.");
 		}
 		else
-			System.out.println("No existe un cliente asociado a ese DNI.");
+			System.out.println("Transferencia fallida: No existe un cliente asociado a ese DNI.");
 	}
 }
