@@ -49,10 +49,24 @@ public class Banco {
 		
 		return poscliente;
 	}
+	
+	private boolean esdniUnico(int dni) {
+		for(int i = 0; i < MAX; i++) {
+			if(this.arrClientes[i] != null && this.arrClientes[i].getDni() == dni) {
+				return false;
+			}
+		}
+		return true;
+	}
 		
 	public void agregarCliente(Cliente nuevocliente) {
 		int posvacia = obtenerPosvaciacliente();
-		this.arrClientes[posvacia] = nuevocliente;
+		if(esdniUnico(nuevocliente.getDni())) {
+			this.arrClientes[posvacia] = nuevocliente;
+		}
+		else {
+			System.out.println("Ya existe un cliente con ese DNI.");
+		}
 	}
 	
 	public void asignarCuenta(int dni) {
@@ -81,7 +95,7 @@ public class Banco {
 			System.out.println("No existe cliente.");
 	}
 	
-	public void listarCuentas(int dni) {
+	private void listarCuentas(int dni) {
 		int i = 0;
 		while(i < MAX && this.arrCuentas[i].getCliente() != null) {
 			if(this.arrCuentas[i].getCliente().getDni() == dni) {
