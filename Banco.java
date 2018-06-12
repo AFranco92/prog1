@@ -75,30 +75,32 @@ public class Banco {
 		this.arrCuentas[posvaciacuenta].setCliente(arrClientes[poscliente]);
 	}
 	
-	private void limpiarCuenta(int poscuenta) {
-		this.arrCuentas[poscuenta].setCliente(null);
-		this.arrCuentas[poscuenta].setMonto(0);
-		this.arrCuentas[poscuenta].setArrMovimientos(new Movimiento[Cuenta.MAXMOVIMIENTOS]);
+	private void limpiarCuenta(int poscuenta, int nrodec) {
+		if(this.arrCuentas[poscuenta] != null && this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
+			this.arrCuentas[poscuenta].setCliente(null);
+			this.arrCuentas[poscuenta].setMonto(0);
+			this.arrCuentas[poscuenta].setArrMovimientos(new Movimiento[Cuenta.MAXMOVIMIENTOS]);
+		}
 	}
 	
 	public void cerrarCuenta(int dni, int nrodec) {
-		int poscliente = obtenerPoscliente(dni);
 		int poscuenta = nrodec-1;
-		if(this.arrClientes[poscliente].getDni() == dni) {
-			if(this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
-				limpiarCuenta(poscuenta);
-			}
+		if(this.arrCuentas[poscuenta] != null && this.arrCuentas[poscuenta].getCliente().getDni() == dni) {
+			if(this.arrCuentas[poscuenta] != null && this.arrCuentas[poscuenta].getNrodecuenta() == nrodec) {
+				limpiarCuenta(poscuenta, nrodec);
+				System.out.println("Se cerró la cuenta "+nrodec);
+			}				
 			else
-				System.out.println("No existe cuenta o no es de ese cliente.");
+				System.out.println("Cierre de cuenta fallido: No existe esa cuenta");
 		}
 		else
-			System.out.println("No existe cliente.");
+			System.out.println("Cierre de cuenta fallido: No existe ese cliente.");
 	}
 	
 	private void listarCuentas(int dni) {
 		int i = 0;
-		while(i < MAX && this.arrCuentas[i].getCliente() != null) {
-			if(this.arrCuentas[i].getCliente().getDni() == dni) {
+		while(i < MAX) {
+			if(this.arrCuentas[i].getCliente() != null && this.arrCuentas[i].getCliente().getDni() == dni) {
 				this.arrCuentas[i].listarDatos();
 			}
 			i++;
